@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using music_manager_starter.Data;
 
@@ -10,9 +11,11 @@ using music_manager_starter.Data;
 namespace music_manager_starter.Data.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241115004836_UpdatedPlaylistWithTitle")]
+    partial class UpdatedPlaylistWithTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -45,13 +48,6 @@ namespace music_manager_starter.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Playlists");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("6f47c84f-4a7d-4e83-8b8f-1829f0eafca5"),
-                            Title = "Circle With Me"
-                        });
                 });
 
             modelBuilder.Entity("music_manager_starter.Data.Models.Song", b =>

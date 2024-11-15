@@ -1,0 +1,65 @@
+@page "/AddPlaylistSong/{id}"
+@using music_manager_starter.Shared
+
+@inject HttpClient Http
+
+
+<div class="p-0 min-h-screen bg-pattern flex flex-col items-center justify-center">
+
+    <h2 class="text-3xl font-bold text-white mb-8 text-center">Add Song to Playlist</h2>
+    <p class="text-3xl font-bold text-white mb-8 text-center">Item ID: @ItemId</p>
+
+    <EditForm Model="newPlaylistSong" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <label class="block text-gray-200">Select Songs</label>
+        <select @bind="newPlaylistSong.SongId" class="mt-1 block w-full p-2 border rounded">
+            <option value="">Select a song...</option>
+            @foreach (var song in availableSongs)
+            {
+                <option value="@song.Id">@song.Title</option>
+            }
+        </select>
+        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">Add Song to Playlist</button>
+    </EditForm>
+    @if (message != null)
+    {
+        <p class="mt-4 text-green-500">@message</p>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private string ItemId;
+
+    private PlaylistSong newPlaylistSong = new PlaylistSong(); 
+
+    private List<Song> availableSongs = new List<Song>(); 
+
+    private string selectedSong;
+    private string message;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        ItemId = id;
+        availableSongs = await Http.GetFromJsonAsync<List<Song>>("api/songs");
+        newPlaylistSong.PlaylistId = id;
+    }
+    private async Task HandleValidSubmit()
+    {
+        var response = await Http.PostAsJsonAsync("api/playlistsongs", newPlaylistSong);
+        if (response.IsSuccessStatusCode)
+        {
+            message = "Song added successfully!";
+            newPlaylistSong = new PlaylistSong(); 
+        }
+        else
+        {
+            message = "Error adding song to playlist. Please try again.";
+        }
+    }
+}

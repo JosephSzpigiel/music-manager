@@ -14,6 +14,6 @@ namespace music_manager_starter.Data.Models
         public string Album { get; set; }
         public string Genre { get; set; }
         public int Score { get; set; }
-        public List<Playlist> Playlists { get; set; }
+        public List<Playlist> Playlists { get; set; } = [];
     }
 }

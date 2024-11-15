@@ -29,9 +29,8 @@ namespace music_manager_starter.Server.Controllers
         {
             if (playlist == null)
             {
-                return BadRequest("Playlist cannot be null.");
+                return BadRequest("PlaylistSong cannot be null.");
             }
-
 
             _context.Playlists.Add(playlist);
             await _context.SaveChangesAsync();
