@@ -25,11 +25,18 @@
 
                 <div class="glass p-6 border border-gray-300 rounded-lg text-white transition-transform transform hover:scale-105 hover:shadow-xl cursor-pointer">
                     <h3 class="text-xl font-semibold mb-2">@playlist.Title</h3>
-                    @foreach (var song in playlist.Songs ?? new List<Song>())
-                    {
-                        <p class="text-white">@song.Title</p>
-                    }
-                    <a href="@($"/AddPlaylistSong/{@playlist.Id}")" class="bg-purple-600 text-white px-4 py-2 rounded">Add to playlist</a>
+                    @* <ol class="list-style-type: decimal; padding-left: 1rem;"> *@
+                    <div class="pb-2">
+                        @foreach (var song in playlist.Songs ?? new List<Song>())
+                        {
+                             <div class="flex pb-1">
+                                <li class="text-white pb-1 flex-grow py-1">@song.Title</li>
+                                <button class="bg-purple-600 text-white px-2 py-1 rounded ml-2">Delete</button>
+                             </div>
+                        }
+                    </div>
+                    @* </ol> *@
+                    <a href="@($"/AddPlaylistSong/{@playlist.Id}")" class="bg-purple-600 text-white px-4 py-2 rounded">Edit Playlist</a>
 
                 </div>
             }

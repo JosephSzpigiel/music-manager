@@ -10,7 +10,7 @@
     <p class="text-xl font-semibold text-white">Playlist Name: @currPlaylist.Title</p>
     @foreach (var song in currPlaylist.Songs)
     {
-        <p class="text-white">@song.Title</p>
+        <li class="text-white">@song.Title</li>
     }
 
     <EditForm Model="selectedSong" OnValidSubmit="HandleValidSubmit">
