@@ -4,16 +4,20 @@
 @inject HttpClient Http
 
 
-<div class="p-0 min-h-screen bg-pattern flex flex-col items-center justify-center">
+<div class="p-6">
 
-    <h2 class="text-3xl font-bold text-white mb-8 text-center">Add Song to Playlist</h2>
-    <p class="text-3xl font-bold text-white mb-8 text-center">Item ID: @ItemId</p>
+    <h2 class="text-xl font-semibold text-white">Add Song to Playlist</h2>
+    <p class="text-xl font-semibold text-white">Playlist Name: @currPlaylist.Title</p>
+    @foreach (var song in currPlaylist.Songs)
+    {
+        <p class="text-white">@song.Title</p>
+    }
 
-    <EditForm Model="newPlaylistSong" OnValidSubmit="HandleValidSubmit">
+    <EditForm Model="selectedSong" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <label class="block text-gray-200">Select Songs</label>
-        <select @bind="newPlaylistSong.SongId" class="mt-1 block w-full p-2 border rounded">
+        <select @bind="selectedSong" class="mt-1 block w-full p-2 border rounded">
             <option value="">Select a song...</option>
             @foreach (var song in availableSongs)
             {
@@ -35,27 +39,32 @@
 
     private string ItemId;
 
-    private PlaylistSong newPlaylistSong = new PlaylistSong(); 
+    private Playlist currPlaylist;
+    private Song songToAdd;
 
     private List<Song> availableSongs = new List<Song>(); 
-
-    private string selectedSong;
+    private Guid selectedSong;
     private string message;
 
 
     protected override async Task OnInitializedAsync()
     {
         ItemId = id;
+        currPlaylist = await Http.GetFromJsonAsync<Playlist>($"api/playlists/{id}");
         availableSongs = await Http.GetFromJsonAsync<List<Song>>("api/songs");
-        newPlaylistSong.PlaylistId = id;
+        availableSongs = availableSongs ?? new List<Song>();
     }
     private async Task HandleValidSubmit()
     {
-        var response = await Http.PostAsJsonAsync("api/playlistsongs", newPlaylistSong);
+        Console.WriteLine(selectedSong);
+
+        songToAdd = availableSongs.FirstOrDefault(s => s.Id == selectedSong);
+        Console.WriteLine(currPlaylist.Songs[0].Title);
+        var response = await Http.PutAsJsonAsync($"api/playlists/AddSong/{id}", songToAdd);
         if (response.IsSuccessStatusCode)
         {
+            currPlaylist = await response.Content.ReadFromJsonAsync<Playlist>();
             message = "Song added successfully!";
-            newPlaylistSong = new PlaylistSong(); 
         }
         else
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace music_manager_starter.Data.Models
@@ -14,6 +15,8 @@ namespace music_manager_starter.Data.Models
         public string Album { get; set; }
         public string Genre { get; set; }
         public int Score { get; set; }
+        
+        [JsonIgnore]
         public List<Playlist> Playlists { get; set; } = [];
     }
 }

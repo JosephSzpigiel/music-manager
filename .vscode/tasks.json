@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "msbuild",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "clean",
+			"label": "Clean: music-manager-starter.Client.csproj",
+			"detail": "Clean the music-manager-starter.Client.csproj project using dotnet clean"
+		}
+	]
+}

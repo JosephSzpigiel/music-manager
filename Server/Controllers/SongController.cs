@@ -24,6 +24,19 @@ namespace music_manager_starter.Server.Controllers
             return await _context.Songs.ToListAsync();
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Song>> GetSong(Guid id)
+        {
+            var song = await _context.Songs.FindAsync(id);
+
+            if (song == null)
+            {
+                return NotFound();
+            }
+
+            return song;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Song>> PostSong(Song song)
         {

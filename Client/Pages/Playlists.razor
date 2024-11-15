@@ -21,8 +21,14 @@
             
             @foreach (var playlist in playlists)
             {
+                Console.WriteLine($"Playlist: {playlist.Title}, Songs Count: {playlist.Songs?.Count ?? 0}");
+
                 <div class="glass p-6 border border-gray-300 rounded-lg text-white transition-transform transform hover:scale-105 hover:shadow-xl cursor-pointer">
                     <h3 class="text-xl font-semibold mb-2">@playlist.Title</h3>
+                    @foreach (var song in playlist.Songs ?? new List<Song>())
+                    {
+                        <p class="text-white">@song.Title</p>
+                    }
                     <a href="@($"/AddPlaylistSong/{@playlist.Id}")" class="bg-purple-600 text-white px-4 py-2 rounded">Add to playlist</a>
 
                 </div>
