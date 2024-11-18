@@ -29,14 +29,11 @@
                     <div class="pb-2">
                         @foreach (var song in playlist.Songs ?? new List<Song>())
                         {
-                             <div class="flex pb-1">
                                 <li class="text-white pb-1 flex-grow py-1">@song.Title</li>
-                                <button class="bg-purple-600 text-white px-2 py-1 rounded ml-2">Delete</button>
-                             </div>
                         }
                     </div>
                     @* </ol> *@
-                    <a href="@($"/AddPlaylistSong/{@playlist.Id}")" class="bg-purple-600 text-white px-4 py-2 rounded">Edit Playlist</a>
+                    <a href="@($"/EditPlaylist/{@playlist.Id}")" class="bg-purple-600 text-white px-4 py-2 rounded">Edit Playlist</a>
 
                 </div>
             }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using music_manager_starter.Data;
 using music_manager_starter.Data.Models;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace music_manager_starter.Server.Controllers
 {
@@ -26,6 +27,7 @@ namespace music_manager_starter.Server.Controllers
                 .ToListAsync();
             return results;
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Playlist>> GetPlaylist(Guid id)
@@ -53,7 +55,7 @@ namespace music_manager_starter.Server.Controllers
             _context.Playlists.Add(playlist);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return CreatedAtAction(nameof(GetPlaylist), new { id = playlist.Id }, playlist.Id);
         }
 
         [HttpPut("AddSong/{id}")]
@@ -78,6 +80,35 @@ namespace music_manager_starter.Server.Controllers
 
             // Add the new song to the playlist's Songs collection
             playlist.Songs.Add(songToAdd);
+
+            // Save the changes to the database
+            await _context.SaveChangesAsync();
+
+            return Ok(playlist);
+        }
+
+        [HttpPut("RemoveSong/{id}")]
+        public async Task<IActionResult> RemoveSongFromPlaylist(Guid id, Song songToRemove)
+        {
+            // Fetch the playlist by its ID
+            var playlist = await _context.Playlists
+                .Include(p => p.Songs)  // Include the Songs in the playlist
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (playlist == null)
+            {
+                return NotFound();
+            }
+
+            // Check if the song already exists in the playlist
+            var songToDelete = playlist.Songs.FirstOrDefault(s => s.Id == songToRemove.Id);
+            if (songToDelete == null)
+            {
+                return NotFound("Song not found in the playlist.");
+            }
+
+            // Remove the song from the playlist's Songs collection
+            playlist.Songs.Remove(songToDelete);
 
             // Save the changes to the database
             await _context.SaveChangesAsync();
@@ -125,7 +156,7 @@ namespace music_manager_starter.Server.Controllers
 
         // DELETE: api/Playlists/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlaylist(int id)
+        public async Task<IActionResult> DeletePlaylist(Guid id)
         {
             var playlist = await _context.Playlists.FindAsync(id);
             if (playlist == null)
@@ -136,7 +167,7 @@ namespace music_manager_starter.Server.Controllers
             _context.Playlists.Remove(playlist);
             await _context.SaveChangesAsync();
 
-            return NoContent(); // 204 status code for successful deletion
+            return NoContent();
         }
 
         private bool PlaylistExists(Guid id)

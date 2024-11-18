@@ -1,0 +1,119 @@
+@page "/EditPlaylist/{id}"
+@using music_manager_starter.Shared
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+
+<div class="p-6">
+    <div class="w-full flex items-center">
+        <p class="text-xl font-semibold text-white pr-2">Playlist Name: @currPlaylist.Title</p>
+        <button @onclick="() => HandleDelete(id)" class="bg-purple-600 text-white px-2 py-1 rounded ml-2">Delete Playlist</button>
+        @if (message != null)
+        {
+            <p class="pl-2 text-green-500">@message</p>
+        }
+    </div>
+    
+    <p class="text-xl font-semibold text-white">Add Songs to Playlist</p>
+    <EditForm Model="selectedSong" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <label class="block text-gray-200">Select Songs</label>
+        <select @bind="selectedSong" class="mt-1 block w-full p-2 border rounded">
+            <option value="">Select a song...</option>
+            @foreach (var song in filteredSongs)
+            {
+                <option value="@song.Id">@song.Title</option>
+            }
+        </select>
+        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">Add Song to Playlist</button>
+    </EditForm>
+    <h2 class="text-xl font-semibold text-white">Songs:</h2>
+        @foreach (var song in currPlaylist.Songs)
+        {
+            <div class="flex items-center">
+                <li class="text-white p-2">@song.Title by @song.Artist</li>
+                <button @onclick="() => HandleDeleteSong(song.Id)" class="bg-purple-600 text-white px-2 py-1 rounded ml-2">Remove</button>
+            </div>
+        }
+
+
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private Playlist currPlaylist;
+
+    private List<Guid> currPlaylistSongIds;
+    private Song songToAdd;
+    private List<Song> availableSongs = new List<Song>(); 
+    
+    private List<Song> filteredSongs = new List<Song>();
+    private Guid selectedSong = Guid.Empty;
+    private string message;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        currPlaylist = await Http.GetFromJsonAsync<Playlist>($"api/playlists/{id}");
+        currPlaylistSongIds = currPlaylist.Songs.Select(song => song.Id).ToList();
+        availableSongs = await Http.GetFromJsonAsync<List<Song>>("api/songs");
+        availableSongs = availableSongs ?? new List<Song>();
+        foreach(Song song in availableSongs)
+        {
+            if(!currPlaylistSongIds.Contains(song.Id))
+            {
+                filteredSongs.Add(song);
+            }
+        }
+    }
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine(selectedSong);
+
+        songToAdd = availableSongs.FirstOrDefault(s => s.Id == selectedSong);
+        var response = await Http.PutAsJsonAsync($"api/playlists/AddSong/{id}", songToAdd);
+        if (response.IsSuccessStatusCode)
+        {
+            currPlaylist = await response.Content.ReadFromJsonAsync<Playlist>();
+            filteredSongs = filteredSongs.Where(s => s.Id != selectedSong).ToList();
+            message = "Song added successfully!";
+        }
+        else
+        {
+            message = "Error adding song to playlist. Please try again.";
+        }
+    }
+
+    private async Task HandleDeleteSong(Guid songId)
+    {
+        Song songToDelete = availableSongs.FirstOrDefault(s => s.Id == songId);
+        var response = await Http.PutAsJsonAsync($"api/playlists/RemoveSong/{id}", songToDelete);
+        if (response.IsSuccessStatusCode)
+        {
+            currPlaylist = await response.Content.ReadFromJsonAsync<Playlist>();
+            filteredSongs.Add(songToDelete);
+            message = "Song removed successfully!";
+        }
+        else
+        {
+            message = "Error adding song to playlist. Please try again.";
+        }
+    }
+    private async Task HandleDelete(string playlistId)
+    {
+        var response = await Http.DeleteAsync($"api/playlists/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo($"/playlists");
+        }
+        else
+        {
+            message = "Error deleting playlist!";
+        }
+    }
+}

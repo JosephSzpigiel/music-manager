@@ -1,5 +1,6 @@
 @page "/AddPlaylist"
 @inject HttpClient Http
+@inject NavigationManager Navigation
 @using music_manager_starter.Shared
 
 @code {
@@ -11,8 +12,8 @@
         var response = await Http.PostAsJsonAsync("api/playlists", newPlaylist);
         if (response.IsSuccessStatusCode)
         {
-            message = "Playlist added successfully!";
-            newPlaylist = new Playlist(); 
+            Guid addedPlaylistId = await response.Content.ReadFromJsonAsync<Guid>();
+            Navigation.NavigateTo($"/EditPlaylist/{addedPlaylistId.ToString()}");
         }
         else
         {
