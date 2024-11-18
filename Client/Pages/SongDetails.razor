@@ -1,0 +1,25 @@
+@page "/Songs/{id}"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@using music_manager_starter.Shared
+
+@code
+{
+        [Parameter]
+        public string id { get; set; }
+        private Song currSong;
+
+        protected override async Task OnInitializedAsync()
+        {
+            currSong = await Http.GetFromJsonAsync<Song>($"api/songs/{id}");
+        }
+}
+
+    <button class="bg-purple-600 text-white px-2 py-1 rounded ml-2" @onclick= "() => Navigation.NavigateTo('/'.ToString())">Return to Song List</button>
+
+    <div class="p-0 min-h-screen bg-pattern flex flex-col items-center justify-center">
+        <p class="text-xl font-semibold text-white">@currSong.Title</p>
+        <p class="text-xl font-semibold text-white">@currSong.Album</p>
+        <p class="text-xl font-semibold text-white">@currSong.Artist</p>
+        <p class="text-xl font-semibold text-white">@currSong.Genre</p>
+    </div>
