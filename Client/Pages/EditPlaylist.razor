@@ -4,12 +4,12 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
-
+<button class="bg-purple-600 text-white px-2 py-1 rounded my-2 mx-2" @onclick= "() => Navigation.NavigateTo(playlistUrl)">Return to Playlists</button>
 
 <div class="p-6">
     <div class="w-full flex items-center">
-        <p class="text-xl font-semibold text-white pr-2">Playlist Name: @currPlaylist.Title</p>
-        <button @onclick="() => HandleDelete(id)" class="bg-purple-600 text-white px-2 py-1 rounded ml-2">Delete Playlist</button>
+        <p class="text-3xl font-semibold text-white pr-2">Playlist Name: @currPlaylist.Title</p>
+        <button @onclick="() => HandleDelete(id)" class="bg-red-600 text-white px-2 py-1 rounded ml-2">Delete Playlist</button>
         @if (message != null)
         {
             <p class="pl-2 text-green-500">@message</p>
@@ -21,21 +21,21 @@
         <DataAnnotationsValidator />
         <ValidationSummary />
         <label class="block text-gray-200">Select Songs</label>
-        <select @bind="selectedSong" class="mt-1 block w-full p-2 border rounded">
-            <option value="">Select a song...</option>
+        <select @bind="selectedSong" class="my-1 block w-full p-2 border rounded">
+            <option value="Guid.Empty">Select a song...</option>
             @foreach (var song in filteredSongs)
             {
                 <option value="@song.Id">@song.Title</option>
             }
         </select>
-        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">Add Song to Playlist</button>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Add Song to Playlist</button>
     </EditForm>
     <h2 class="text-xl font-semibold text-white">Songs:</h2>
         @foreach (var song in currPlaylist.Songs)
         {
             <div class="flex items-center">
                 <li class="text-white p-2">@song.Title by @song.Artist</li>
-                <button @onclick="() => HandleDeleteSong(song.Id)" class="bg-purple-600 text-white px-2 py-1 rounded ml-2">Remove</button>
+                <button @onclick="() => HandleDeleteSong(song.Id)" class="bg-red-600 text-white px-2 py-1 rounded ml-2">Remove</button>
             </div>
         }
 
@@ -47,6 +47,8 @@
     public string id { get; set; }
 
     private Playlist currPlaylist;
+
+    private string playlistUrl = "/playlists";
 
     private List<Guid> currPlaylistSongIds;
     private Song songToAdd;

@@ -51,5 +51,20 @@ namespace music_manager_starter.Server.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSong(Guid id)
+        {
+            var song = await _context.Songs.FindAsync(id);
+            if (song == null)
+            {
+                return NotFound();
+            }
+
+            _context.Songs.Remove(song);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
